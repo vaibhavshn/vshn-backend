@@ -27,11 +27,27 @@ Extract browser and OS information from user agent of request.
 
 ## API Endpoints
 
-| Method   | Path            | Notes                    |
-| -------- | --------------- | ------------------------ |
-| `POST`   | /auth/register/ | Register user            |
-| `POST`   | /auth/sign-in   | Sign in user             |
-| `GET`    | /link/:id       | Get link information     |
-| `PUT`    | /link           | Add a new link           |
-| `PATCH`  | /link/:id       | Update a link with an id |
-| `DELETE` | /link/:id       | Delete a link with an id |
+| Method   | Path            | Notes                     |
+| -------- | --------------- | ------------------------- |
+| `POST`   | /auth/register/ | Register user             |
+| `POST`   | /auth/sign-in   | Sign in user              |
+| `PUT`    | /link           | Add a new link            |
+| `GET`    | /link/:hash     | Get link information      |
+| `PATCH`  | /link/:hash     | Update a link with a hash |
+| `DELETE` | /link/:hash     | Delete a link with a hash |
+
+## Setting up development environment
+
+Make sure you have `docker` installed.
+
+### Start the mongodb container
+
+```sh
+./bin/start-db.sh
+```
+
+### Start server
+
+```sh
+yarn dev
+```

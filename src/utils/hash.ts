@@ -1,5 +1,9 @@
-import { createHmac } from 'crypto';
+import { createHmac, randomBytes } from 'crypto';
+import { Request, Response } from 'express';
 import { sign, verify } from 'jsonwebtoken';
+
+export const getRandomHash = (bytes: number = 3) =>
+  randomBytes(bytes).toString('hex');
 
 export const hasher = (password: string): false | string => {
   if (!process.env.SALT) return false;
@@ -20,15 +24,21 @@ export const generateAccessToken = (
   const SECRET: string = process.env.SECRET;
 
   return sign(data, SECRET, {
-    expiresIn: '1800s', // expires in 30m
+    // expiresIn: '1800s', // expires in 30m
+    expiresIn: '3600s', // expires in 60m
   });
 };
 
-export const authenticateToken = (req: any, res: any, next: Function) => {
-  const authHeader = req.headers['authorization'];
+export const authenticateToken = (
+  req: Request,
+  res: Response,
+  next: Function
+) => {
+  const authHeader: string | undefined = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
 
   if (!token) {
+    // token doesn't exist
     res.status(401);
     return res.send();
   }
@@ -41,6 +51,7 @@ export const authenticateToken = (req: any, res: any, next: Function) => {
       res.status(401);
       return res.send();
     }
+    res.locals.user = user;
     return next();
   });
 };
