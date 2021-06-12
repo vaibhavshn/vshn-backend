@@ -3,14 +3,14 @@ import { authenticateToken } from '../utils/hash';
 import {
   addLink,
   getLink,
-  getAllLinks,
+  // getAllLinks,
   deleteLink,
   patchLink,
 } from './methods';
 
 const router = Router();
 
-router.get('/', authenticateToken, getAllLinks);
+// router.get('/', authenticateToken, getAllLinks);
 router.get('/:hash', authenticateToken, getLink);
 
 router.put('/', authenticateToken, addLink);

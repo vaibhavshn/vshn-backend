@@ -1,5 +1,7 @@
 import express from 'express';
-import mongoose, { connect, connection, set } from 'mongoose';
+import mongoose from 'mongoose';
+import cors from 'cors';
+
 import config from './config';
 import AuthRouter from './auth/router';
 import LinkRouter from './link/router';
@@ -31,6 +33,18 @@ db.once('open', () => {
 
 // Parses JSON body
 app.use(express.json());
+
+// CORS for frontend
+const corsOptions = {
+  origin: (origin: any, callback: Function) => {
+    callback(null, [
+      'https://vshn.in',
+      config.mode === 'development' && 'http://localhost:3000',
+    ]);
+  },
+};
+
+app.use(cors(corsOptions));
 
 app.get('/', (req, res) => {
   res.status(200);

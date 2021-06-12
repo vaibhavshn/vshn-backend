@@ -8,5 +8,7 @@
     "esModuleInterop": true,
     "inlineSourceMap": false
   },
-  "ts-node": { "transpileOnly": true, "files": false }
+  "ts-node": { "transpileOnly": true, "files": false },
+  "include": ["src"],
+  "exclude": ["node_modules"]
 }

@@ -4,7 +4,7 @@ import { pick } from 'lodash';
 import { getRandomHash } from '../utils/hash';
 
 import LinkModel, { Link } from './models';
-import { PaginateResult } from 'mongoose';
+// import { PaginateResult } from 'mongoose';
 
 const addRandomHashLink = (
   uid: string,
@@ -112,34 +112,34 @@ export const getLink = (req: Request, res: Response) => {
     });
 };
 
-export const getAllLinks = (req: Request, res: Response) => {
-  const { user } = res.locals;
+// export const getAllLinks = (req: Request, res: Response) => {
+//   const { user } = res.locals;
 
-  if (!user) {
-    res.status(401);
-    return res.send();
-  }
+//   if (!user) {
+//     res.status(401);
+//     return res.send();
+//   }
 
-  const page = Number(req.query.page) ?? 1;
-  const batchSize = 10;
+//   const page = Number(req.query.page) ?? 1;
+//   const batchSize = 10;
 
-  LinkModel.paginate(
-    { uid: user.id },
-    { page, sort: { createdAt: -1 }, lean: true, limit: batchSize }
-  )
-    .then((links: PaginateResult<Link>) => {
-      res.json({
-        ...links,
-        docs: links.docs.map((link) =>
-          pick(link, ['hash', 'url', 'createdAt'])
-        ),
-      });
-    })
-    .catch((_) => {
-      res.status(500);
-      res.send('Unknown error');
-    });
-};
+//   LinkModel.paginate(
+//     { uid: user.id },
+//     { page, sort: { createdAt: -1 }, lean: true, limit: batchSize }
+//   )
+//     .then((links: PaginateResult<Link>) => {
+//       res.json({
+//         ...links,
+//         docs: links.docs.map((link) =>
+//           pick(link, ['hash', 'url', 'createdAt'])
+//         ),
+//       });
+//     })
+//     .catch((_) => {
+//       res.status(500);
+//       res.send('Unknown error');
+//     });
+// };
 
 export const deleteLink = (req: Request, res: Response) => {
   const { user } = res.locals;
@@ -160,7 +160,7 @@ export const deleteLink = (req: Request, res: Response) => {
         res.send('Deleted');
       }
     })
-    .catch((_) => {
+    .catch((e: Error) => {
       res.status(500);
       res.send('Unknown error');
     });
@@ -188,11 +188,11 @@ export const patchLink = (req: Request, res: Response) => {
   }
 
   LinkModel.updateOne({ hash, uid: user.id }, linkUpdate)
-    .then((_) => {
+    .then((n: Record<string, number>) => {
       res.status(200);
       res.send('Patched');
     })
-    .catch((e) => {
+    .catch((e: Error) => {
       res.status(500);
       res.send('Unknown error');
     });

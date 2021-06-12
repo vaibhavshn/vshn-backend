@@ -1,7 +1,7 @@
 import { Document, Schema, model } from 'mongoose';
-import mongoosePaginate from 'mongoose-paginate-v2';
+// import mongoosePaginate from 'mongoose-paginate-v2';
 
-interface Link {
+interface Link extends Document {
   hash?: string;
   url: string;
   uid: string;
@@ -15,7 +15,7 @@ const LinkSchema = new Schema({
   createdAt: { type: Date, default: Date.now },
 });
 
-LinkSchema.plugin(mongoosePaginate);
+// LinkSchema.plugin(mongoosePaginate);
 
 const LinkModel = model('Link', LinkSchema);
 
