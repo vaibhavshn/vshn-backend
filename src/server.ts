@@ -1,15 +1,7 @@
-import express from 'express';
+import app from './app';
 
-const MODE =
-  process.env.NODE_ENV === 'development' ? 'development' : 'production';
-console.log(`[server] Starting in ${MODE} mode`);
+const PORT = process.env.PORT || 5000;
 
-const app = express();
-
-app.get('/', (req, res) => {
-  res.send('Hello world');
-});
-
-app.listen(process.env.PORT || 5000, () => {
-  console.log(`[server] Listening on port: ${process.env.PORT || 5000} `);
+app.listen(PORT, () => {
+  console.log(`[server] Listening on port: ${PORT} `);
 });
