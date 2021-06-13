@@ -4,10 +4,13 @@ import { authenticateToken } from '../utils/hash';
 
 const router = Router();
 
+// verify token
+router.head('/token', authenticateToken, (req, res) => {
+  res.status(200);
+  res.send();
+});
+
 router.post('/register', registerUser);
 router.post('/login', logIn);
-router.post('/', authenticateToken, (req, res) => {
-  res.send('You are authenticated!');
-});
 
 export default router;

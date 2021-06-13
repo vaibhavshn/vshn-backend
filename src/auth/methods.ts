@@ -44,15 +44,22 @@ export const registerUser = (req: Request, res: Response) => {
   user
     .save()
     .then((user: User) => {
-      return res.json({ status: 'ok' });
+      res.status(200);
+      res.json({
+        accessToken: generateAccessToken({
+          id: user._id,
+          name: user.name,
+          email: user.email,
+        }),
+      });
     })
     .catch((error: Error) => {
       if (error instanceof MongoError) {
         res.status(409);
-        res.json({ status: 'error', error: 'email exists' });
+        res.send('Email exists');
       } else {
         res.status(500);
-        res.json({ status: 'error', error: 'unknown error' });
+        res.send('Unknown error');
       }
     });
 };
@@ -75,7 +82,6 @@ export const logIn = (req: Request, res: Response) => {
     if (user.password === password) {
       res.status(200);
       res.json({
-        status: 'ok',
         accessToken: generateAccessToken({
           id: user.id,
           name: user.name,

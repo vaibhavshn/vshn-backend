@@ -24,8 +24,7 @@ export const generateAccessToken = (
   const SECRET: string = process.env.SECRET;
 
   return sign(data, SECRET, {
-    // expiresIn: '1800s', // expires in 30m
-    expiresIn: '3600s', // expires in 60m
+    expiresIn: '1440m', // expires in 24h
   });
 };
 

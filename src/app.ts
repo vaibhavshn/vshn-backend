@@ -11,7 +11,6 @@ if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config();
 }
 
-console.log(config);
 console.log(`[server] Starting in ${config.mode} mode`);
 
 const app = express();
@@ -51,8 +50,11 @@ app.disable('etag');
 app.disable('x-powered-by');
 
 app.get('/', (req, res) => {
-  res.status(200);
-  res.json({ status: 'ok' });
+  const appRoute =
+    config.mode === 'production'
+      ? 'https://app.vshn.in'
+      : 'http://localhost:3000';
+  res.redirect(301, appRoute);
 });
 
 app.use('/auth', AuthRouter);

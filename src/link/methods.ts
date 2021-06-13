@@ -4,6 +4,7 @@ import { pick } from 'lodash';
 import { getRandomHash } from '../utils/hash';
 
 import LinkModel, { Link } from './models';
+import VisitModel from '../visit/models';
 // import { PaginateResult } from 'mongoose';
 
 const addRandomHashLink = (
@@ -83,6 +84,89 @@ export const addLink = (req: Request, res: Response) => {
   }
 };
 
+const getLinkWithStats = (res: Response, link: Link) => {
+  const promises = Promise.all([
+    // Get unique views
+    VisitModel.aggregate([
+      {
+        $group: {
+          _id: '$ipAddress',
+          count: { $sum: 1 },
+        },
+      },
+      { $count: 'documentCount' },
+    ]),
+    // alternative
+    // VisitModel.find({ lid: link._id }).distinct('ipAddress'),
+
+    // Get total views
+    VisitModel.aggregate([
+      {
+        $group: {
+          _id: '$ipAddress',
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $group: {
+          _id: 'total',
+          total: { $sum: '$count' },
+        },
+      },
+    ]),
+    //alterative
+    // VisitModel.find({ lid: link._id }).countDocuments(),
+
+    // Get browser stats
+    VisitModel.aggregate([
+      {
+        $group: {
+          _id: '$browser',
+          count: { $sum: 1 },
+        },
+      },
+    ]),
+
+    // Get OS stats
+    VisitModel.aggregate([
+      {
+        $group: {
+          _id: '$os',
+          count: { $sum: 1 },
+        },
+      },
+    ]),
+  ]);
+
+  promises
+    .then(([uniqueViews, totalViews, browserResults, osResults]) => {
+      const browsers: Record<string, number> = {},
+        os: Record<string, number> = {};
+
+      for (const row of browserResults) {
+        browsers[row._id] = row.count;
+      }
+
+      for (const row of osResults) {
+        os[row._id] = row.count;
+      }
+
+      res.status(200);
+      res.json({
+        ...pick(link, ['url', 'createdAt']),
+        uniqueViews: uniqueViews[0].documentCount,
+        totalViews: totalViews[0].total,
+        browsers,
+        os,
+      });
+    })
+    .catch((err: Error) => {
+      console.log(err);
+      res.status(500);
+      res.send('Unknown error');
+    });
+};
+
 export const getLink = (req: Request, res: Response) => {
   const { user } = res.locals;
 
@@ -100,11 +184,7 @@ export const getLink = (req: Request, res: Response) => {
         res.status(404);
         return res.send('Not found');
       }
-      res.status(200);
-      res.json({
-        url: link.url,
-        createdAt: link.createdAt,
-      });
+      getLinkWithStats(res, link);
     })
     .catch((error: Error) => {
       res.status(500);
@@ -112,34 +192,48 @@ export const getLink = (req: Request, res: Response) => {
     });
 };
 
-// export const getAllLinks = (req: Request, res: Response) => {
-//   const { user } = res.locals;
+export const getAllLinks = (req: Request, res: Response) => {
+  const { user } = res.locals;
 
-//   if (!user) {
-//     res.status(401);
-//     return res.send();
-//   }
+  if (!user) {
+    res.status(401);
+    return res.send();
+  }
 
-//   const page = Number(req.query.page) ?? 1;
-//   const batchSize = 10;
+  let page: number = 1;
+  const batchSize = 10;
 
-//   LinkModel.paginate(
-//     { uid: user.id },
-//     { page, sort: { createdAt: -1 }, lean: true, limit: batchSize }
-//   )
-//     .then((links: PaginateResult<Link>) => {
-//       res.json({
-//         ...links,
-//         docs: links.docs.map((link) =>
-//           pick(link, ['hash', 'url', 'createdAt'])
-//         ),
-//       });
-//     })
-//     .catch((_) => {
-//       res.status(500);
-//       res.send('Unknown error');
-//     });
-// };
+  try {
+    page = Number(req.query.page) ?? 1;
+  } catch (e) {}
+
+  if (!page) page = 1;
+
+  // pagination
+  Promise.all([
+    LinkModel.find({ uid: user.id }).countDocuments(),
+    LinkModel.find({ uid: user.id })
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * batchSize)
+      .limit(batchSize)
+      .lean(),
+  ])
+    .then(([totalCount, links]) => {
+      const pages = Math.ceil(totalCount / batchSize);
+
+      res.json({
+        links: links.map((link: Link) => pick(link, ['hash', 'url'])),
+        hasNextPage: page < pages ? true : false,
+
+        page,
+        pages,
+      });
+    })
+    .catch((error: Error) => {
+      res.status(500);
+      res.send('Unknown error');
+    });
+};
 
 export const deleteLink = (req: Request, res: Response) => {
   const { user } = res.locals;
