@@ -5,6 +5,7 @@ import cors from 'cors';
 import config from './config';
 import AuthRouter from './auth/router';
 import LinkRouter from './link/router';
+import { redirector } from './visit/methods';
 
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config();
@@ -46,6 +47,9 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
+app.disable('etag');
+app.disable('x-powered-by');
+
 app.get('/', (req, res) => {
   res.status(200);
   res.json({ status: 'ok' });
@@ -53,5 +57,7 @@ app.get('/', (req, res) => {
 
 app.use('/auth', AuthRouter);
 app.use('/link', LinkRouter);
+
+app.use('/:hash', redirector);
 
 export default app;

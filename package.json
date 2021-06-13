@@ -11,16 +11,20 @@
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.17.1",
+    "geoip-lite": "^1.4.2",
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.21",
-    "mongoose": "^5.12.13"
+    "mongoose": "^5.12.13",
+    "ua-parser-js": "^0.7.28"
   },
   "devDependencies": {
     "@types/cors": "^2.8.10",
     "@types/express": "^4.17.12",
+    "@types/geoip-lite": "^1.4.1",
     "@types/jsonwebtoken": "^8.5.1",
     "@types/lodash": "^4.14.170",
     "@types/node": "^15.12.2",
+    "@types/ua-parser-js": "^0.7.36",
     "dotenv": "^10.0.0",
     "nodemon": "^2.0.7",
     "ts-node": "^10.0.0",
