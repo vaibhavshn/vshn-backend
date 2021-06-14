@@ -224,8 +224,8 @@ export const getAllLinks = (req: Request, res: Response) => {
       res.json({
         links: links.map((link: Link) => pick(link, ['hash', 'url'])),
         hasNextPage: page < pages ? true : false,
-
         page,
+        total: totalCount,
         pages,
       });
     })
