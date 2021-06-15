@@ -6,11 +6,14 @@ import {
   getAllLinks,
   deleteLink,
   patchLink,
+  getStats,
 } from './methods';
 
 const router = Router();
 
 router.get('/', authenticateToken, getAllLinks);
+
+router.get('/stats', authenticateToken, getStats);
 router.get('/:hash', authenticateToken, getLink);
 
 router.put('/', authenticateToken, addLink);

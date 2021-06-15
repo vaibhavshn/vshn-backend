@@ -39,7 +39,10 @@ const corsOptions = {
   origin: (origin: any, callback: Function) => {
     callback(null, [
       'https://vshn.in',
-      config.mode === 'development' && 'http://localhost:3000',
+      config.mode === 'development' && [
+        'http://localhost:3000',
+        'http://192.168.118.121:3000',
+      ],
     ]);
   },
 };
@@ -60,6 +63,6 @@ app.get('/', (req, res) => {
 app.use('/auth', AuthRouter);
 app.use('/link', LinkRouter);
 
-app.use('/:hash', redirector);
+app.get('/:hash', redirector);
 
 export default app;

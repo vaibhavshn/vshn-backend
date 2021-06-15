@@ -235,6 +235,51 @@ export const getAllLinks = (req: Request, res: Response) => {
     });
 };
 
+export const getStats = (req: Request, res: Response) => {
+  const { user } = res.locals;
+  if (!user) {
+    res.status(401);
+    return res.send();
+  }
+
+  LinkModel.aggregate([
+    {
+      $match: { uid: user.id },
+    },
+    {
+      $lookup: {
+        from: 'visits',
+        localField: '_id',
+        foreignField: 'lid',
+        as: 'visits',
+      },
+    },
+    {
+      $project: {
+        hash: 1,
+        count: { $size: '$visits' },
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        total: { $sum: '$count' },
+      },
+    },
+  ])
+    .then((stats) => {
+      const totalViews = stats[0].total;
+      res.status(200);
+      res.json({
+        totalViews,
+      });
+    })
+    .catch((error: Error) => {
+      res.status(500);
+      res.send('Unknown error');
+    });
+};
+
 export const deleteLink = (req: Request, res: Response) => {
   const { user } = res.locals;
   if (!user) {
