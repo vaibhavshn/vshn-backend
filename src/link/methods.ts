@@ -1,12 +1,10 @@
 import { Request, Response } from 'express';
 import { MongoError } from 'mongodb';
-import { Types } from 'mongoose';
 import { pick } from 'lodash';
 import { getRandomHash } from '../utils/hash';
 
 import LinkModel, { Link } from './models';
 import VisitModel from '../visit/models';
-// import { PaginateResult } from 'mongoose';
 
 const addRandomHashLink = (
   uid: string,
@@ -19,14 +17,12 @@ const addRandomHashLink = (
     return res.send('Unknown error');
   }
   const hash = getRandomHash();
-  console.log(uid, url, hash);
   linkAdder(uid, url, hash)
     .then((link: Link) => {
       res.status(200);
       res.send(hash);
     })
     .catch((error: Error) => {
-      // console.log(error);
       addRandomHashLink(uid, url, res, iteration + 1);
     });
 };
@@ -85,7 +81,6 @@ export const addLink = (req: Request, res: Response) => {
 
 const getLinkWithStats = (res: Response, link: Link, userId: string) => {
   const promises = Promise.all([
-    // Get unique views
     VisitModel.aggregate([
       {
         $match: {
@@ -105,17 +100,6 @@ const getLinkWithStats = (res: Response, link: Link, userId: string) => {
         },
       },
     ]),
-    // VisitModel.aggregate([
-    //   {
-    //     $group: {
-    //       _id: '$ipAddress',
-    //       count: { $sum: 1 },
-    //     },
-    //   },
-    //   { $count: 'documentCount' },
-    // ]),
-    // alternative
-    // VisitModel.find({ lid: link._id }).distinct('ipAddress'),
 
     // Get total views
     LinkModel.aggregate([
@@ -143,18 +127,8 @@ const getLinkWithStats = (res: Response, link: Link, userId: string) => {
         },
       },
     ]),
-    //alterative
-    // VisitModel.find({ lid: link._id }).countDocuments(),
 
     // Get browser stats
-    // VisitModel.aggregate([
-    //   {
-    //     $group: {
-    //       _id: '$browser',
-    //       count: { $sum: 1 },
-    //     },
-    //   },
-    // ]),
     VisitModel.aggregate([
       {
         $match: {
@@ -170,14 +144,6 @@ const getLinkWithStats = (res: Response, link: Link, userId: string) => {
     ]),
 
     // Get OS stats
-    // VisitModel.aggregate([
-    //   {
-    //     $group: {
-    //       _id: '$os',
-    //       count: { $sum: 1 },
-    //     },
-    //   },
-    // ]),
     VisitModel.aggregate([
       {
         $match: {
@@ -295,7 +261,6 @@ export const getStats = (req: Request, res: Response) => {
     res.status(401);
     return res.send();
   }
-  console.log(user);
   LinkModel.aggregate([
     {
       $match: { uid: user.id },
@@ -322,7 +287,6 @@ export const getStats = (req: Request, res: Response) => {
     },
   ])
     .then((stats) => {
-      console.log(stats);
       const totalViews = stats.length === 0 ? 0 : stats[0].total;
       res.status(200);
       res.json({
@@ -330,7 +294,6 @@ export const getStats = (req: Request, res: Response) => {
       });
     })
     .catch((error: Error) => {
-      console.log(error);
       res.status(500);
       res.send('Unknown error');
     });
