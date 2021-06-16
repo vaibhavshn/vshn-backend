@@ -5,7 +5,7 @@ import cors from 'cors';
 import config from './config';
 import AuthRouter from './auth/router';
 import LinkRouter from './link/router';
-import { redirector } from './visit/methods';
+import { redirector } from './visit/controllers';
 
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config();
