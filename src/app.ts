@@ -24,7 +24,7 @@ mongoose.connect(config.db.url, {
   useUnifiedTopology: true,
 });
 
-const db = mongoose.connection;
+export const db = mongoose.connection;
 
 db.on('error', () => console.error('[mongoose] Error connecting to database'));
 db.once('open', () => {
