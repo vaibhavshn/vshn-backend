@@ -31,7 +31,7 @@ export const addLink = (req: Request, res: Response) => {
       return res.send('Short hash');
     }
 
-    const hash: string = linkData.hash;
+    const hash: string = linkData.hash.trim();
 
     linkAdder(user.id, linkData.url, hash)
       .then((link: Link) => {
@@ -152,10 +152,9 @@ export const getStats = (req: Request, res: Response) => {
     },
   ])
     .then((stats) => {
-      const totalViews = stats.length === 0 ? 0 : stats[0].total;
       res.status(200);
       res.json({
-        totalViews,
+        totalViews: stats.length === 0 ? 0 : stats[0].total,
       });
     })
     .catch((error: Error) => {
@@ -196,7 +195,7 @@ export const patchLink = (req: Request, res: Response) => {
     return res.send();
   }
 
-  const hash = req.params.hash;
+  const hash = req.params.hash.trim();
 
   const linkUpdate = pick(req.body, ['hash', 'url']);
   if ('url' in linkUpdate) {
