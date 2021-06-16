@@ -51,3 +51,7 @@ Make sure you have `docker` installed.
 ```sh
 yarn dev
 ```
+
+That's it!
+
+Now go to the frontend project and run `yarn dev` there too!

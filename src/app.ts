@@ -57,7 +57,7 @@ app.disable('x-powered-by');
 app.get('/', (req, res) => {
   const appRoute =
     config.mode === 'production'
-      ? 'https://app.vshn.in'
+      ? 'https://vshn.vercel.app'
       : 'http://localhost:3000';
   res.redirect(301, appRoute);
 });
