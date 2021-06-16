@@ -7,7 +7,7 @@ import {
   deleteLink,
   patchLink,
   getStats,
-} from './methods';
+} from './controllers';
 
 const router = Router();
 

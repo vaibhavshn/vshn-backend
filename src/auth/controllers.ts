@@ -6,16 +6,7 @@ import UserModel, { User } from './models';
 import { validateFields } from '../utils/forms';
 import { generateAccessToken, hasher } from '../utils/hash';
 
-interface RegisterFields extends Record<string, any> {
-  name: string;
-  email: string;
-  password: string;
-}
-
-interface LoginFields extends Record<string, any> {
-  email: string;
-  password: string;
-}
+import { RegisterFields, LoginFields } from './types';
 
 export const registerUser = (req: Request, res: Response) => {
   const userData: RegisterFields = req.body;

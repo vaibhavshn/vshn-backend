@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { registerUser, logIn } from './methods';
+import { registerUser, logIn } from './controllers';
 import { authenticateToken } from '../utils/hash';
 
 const router = Router();

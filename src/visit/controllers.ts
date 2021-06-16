@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 
 import LinkModel, { Link } from '../link/models';
-import { saveVisitData } from './functions';
+import { saveVisitData } from './methods';
 
 export const redirector = (req: Request, res: Response) => {
   const hash = req.params.hash;
