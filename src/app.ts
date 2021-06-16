@@ -39,6 +39,8 @@ const corsOptions = {
   origin: (origin: any, callback: Function) => {
     callback(null, [
       'https://vshn.in',
+      'https://app.vshn.in',
+      'https://vshn.vercel.app',
       config.mode === 'development' && [
         'http://localhost:3000',
         'http://192.168.118.121:3000',
